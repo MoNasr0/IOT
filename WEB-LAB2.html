@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>LAB2-IOT</title>
+    <meta name="Description" content="This is a page to control light power">
+    <h1 style="color: rgb(80, 215, 240);text-align:center;">LIGHT SLIDER</h1>
+</head>
+
+<body>
+    <center>
+        <div id="bg">
+            <div class="range" style="background-color: rgb(80, 215, 240);">
+                <p>0</p><input type="range" onchange="strength()" id="power" min="0" max="255">
+                <p>255</p>
+            </div>
+            <br>
+            <div style="font-size: small;">LIGHT POWER :
+                <label id="show"></label>
+            </div>
+            </cent>
+            <br>
+            <script>
+                //var HOST="ws://localhost:3000";
+                var HOST = location.origin.replace(/^http/, 'ws');
+                var ws = new WebSocket(HOST);
+                var Slider = document.getElementById("power");
+                var readSlider = document.getElementById("power");
+                var sliderVal = document.getElementById("show");
+                ws.onopen = function() {
+                    // console.log("Connected to server");            
+                }
+                Slider.onchange = function() {
+                    ws.send(this.value.toString());
+                    var sliderVal = Slider.value;
+                }
+                ws.onmessage = function(event) {
+                    console.log(event.data);
+                    sliderVal.innerHTML = event.data;
+                    Slider.value = event.data;
+                }
+            </script>
+</body>
+
+</html>
+<style>
+    #bg {
+        border: 2px solid rgb(80, 215, 240);
+        border-radius: .3cm;
+        width: 70%;
+        height: auto;
+        text-align: center;
+    }
+    
+    input,
+    p {
+        font-size: larger;
+        display: inline;
+        color: rgb(255, 255, 255);
+    }
+</style>
+<script>
+    document.getElementById("show").textContent = "" + document.getElementById("power")["value"];
+
+    function strength() {
+        var power = document.getElementById("power")["value"];
+        power = (Number(power) * 4.011765 * 100) / 1023;
+        console.log("The strength of power is " + parseInt(power) + " %");
+        document.getElementById("show").textContent = "" + document.getElementById("power")["value"];
+    }
+</script>
